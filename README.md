@@ -1,1 +1,1 @@
-My first readme
+Task 0: my name is betty
