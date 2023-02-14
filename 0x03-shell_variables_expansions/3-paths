@@ -1,1 +1,3 @@
 echo $PATH | tr ":" "\n" | WC -1 
+#!/bin/bash
+ echo $PATH | tr ":" "\n" | WC -1
