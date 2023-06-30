@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 # Bash that reads the apache log file and extracts the IP and HTTP status using awk
 
-awk '{ count[$1" "$9]++ } END { for (data in count) { print count[data], data } }' apache-access.log | sort -rn
+awk '{ count[$1" "$9]++ } END {
+	for (data in count) {
+        printf "%5d %s\n", count[data], data;
+    }
+}' apache-access.log | sort -rn
