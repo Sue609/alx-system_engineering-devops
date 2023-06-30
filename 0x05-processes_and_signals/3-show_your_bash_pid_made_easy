@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#Bash script that displays the PID, along with the process name, of processes
+
+current_pid=$$
+
+for pid_dir in /proc/[0-9]*/; do
+    pid=$(basename "$pid_dir")
+    comm_path="$pid_dir/comm"
+
+    if [ -r "$comm_path" ]; then
+        process_name=$(tr -d '\0' < "$comm_path")
+
+        if [[ "$process_name" == *"bash"* && "$pid" != "$current_pid" ]]; then
+            echo "$pid $process_name"
+        fi
+    fi
+done
