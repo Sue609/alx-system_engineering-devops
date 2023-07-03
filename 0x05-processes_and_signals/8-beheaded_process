@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Write a Bash script that kills the process 7-highlander.
+
+if pgrep -x "7-highlander" >/dev/null; then
+    echo "Process 7-highlander is running. Killing..."
+    pkill -x 7-highlander
+else
+    echo "Process 7-highlander is not running."
+fi
