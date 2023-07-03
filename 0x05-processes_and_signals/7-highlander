@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# a bash script that displays to infinity and beyound indefinately
+# With a sleep 2 in between each iteration
+
+terminate_process() {
+    echo "I am invincible!!!"
+    exit 0
+}
+
+trap terminate_process SIGTERM
+
+while true; do
+    echo "To infinity and beyond"
+    sleep 2
+done
