@@ -2,7 +2,6 @@
 # Bash script that displays the content of the current directory, in list format
 
 for file in *; do
-	if [ -f "$file" ] && [[ "$file" != .* ]] && [[ "$file" =~ -(.*) ]]; then
-		echo "${BASH_REMATCH[1]}"
-	fi
-	done
+  name=${file#*-}
+  echo "$name"
+done
