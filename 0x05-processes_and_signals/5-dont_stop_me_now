@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#bash acript that stops the infinity and beyond process.
+
+./4-to_infinity_and_beyond &
+pid=$!
+sleep 1
+kill $pid
