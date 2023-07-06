@@ -1,15 +1,8 @@
 #!/usr/bin/env bash
 # Script hat displays listening TCP ports
-echo "Active Internet connections (only servers)"
-echo "Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name"
-lsof -iTCP -sTCP:LISTEN -n -P
-
-echo
-echo "Active Internet connections (only servers)"
-echo "Proto Recv-Q Send-Q Local Address           Foreign Address         PID/Program name"
-lsof -iUDP -sUDP:LISTEN -n -P
-
-echo
-echo "Active UNIX domain sockets (only servers)"
-echo "Proto RefCnt Flags       Type       State         I-Node   PID/Program name    Path"
-lsof -U | grep 'LISTEN'
+ss -tlnp | awk 'NR > 1 {
+    split($4, addr, ":")
+    split($6, parts, ",")
+    split(parts[1], program, "=")
+    printf "%s\t%s\t%s\n", addr[1], addr[2], program[2]
+}'
