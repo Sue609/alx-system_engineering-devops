@@ -1,0 +1,6 @@
+#configure it to our needs so that you can connect to a server
+#without typing a password.
+
+Host *
+   PassWordAuthentication no
+   IdentifyFile ~/.ssh/school
