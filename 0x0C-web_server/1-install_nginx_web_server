@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# installing nginx on you web-01 server and should be
+# listening at port 80.
+
+apt-get -y update
+apt-get -y install nginx
+
+ufw allow 'Nginx HTTP'
+
+# creating the default index.html page
+echo "Hello World!" > /var/www/html/index.html
+
+service nginx restart
