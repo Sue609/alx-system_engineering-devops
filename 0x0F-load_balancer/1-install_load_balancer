@@ -20,4 +20,4 @@ EOF
 
 echo "ENABLED=1" | sudo tee /etc/default/haproxy
 
-sudo systemctl restart haproxy
+sudo service haproxy restart
