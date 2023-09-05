@@ -3,31 +3,32 @@
 # to be able to track which web server is answering our HTTP requests
 
 
-sudo apt-get -y update
-sudo apt-get -y install nginx
+sudo apt-get update
 
-echo "Ceci n'est pas une page" |
-    sudo tee /usr/share/nginx/html/custom_404.html > /dev/null
+apt-get install -y nginx
 
-nginx_config_path="/etc/nginx/sites-available/default"
-nginx_config_content=$(cat <<EOF
-server {
+echo "Hello World!" > /var/www/html/index.nginx-debian.html
+
+echo "Ceci n'est pas une page" > /usr/share/nginx/html/custom_404.html
+
+echo "server {
     listen 80 default_server;
     listen [::]:80 default_server;
+
+    server_name _;
 
     root /var/www/html;
     index index.html;
 
-    server_name _;
-
     location / {
         try_files \$uri \$uri/ =404;
-        add_header X-Served-By \$hostname;
     }
-}
-EOF
-)
 
-echo "$nginx_config_content" | sudo tee "$nginx_config_path" > /dev/null
+    add_header X-Served-By \$hostname;
+}" > /etc/nginx/sites-available/custom_header
 
-sudo systemctl restart nginx
+ln -s /etc/nginx/sites-available/custom_header /etc/nginx/sites-enabled/
+
+nginx -t
+
+service nginx start
