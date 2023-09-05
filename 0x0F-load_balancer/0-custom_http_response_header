@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env bash
 # Adding a custom Nginx response heade
 # to be able to track which web server is answering our HTTP requests
 
