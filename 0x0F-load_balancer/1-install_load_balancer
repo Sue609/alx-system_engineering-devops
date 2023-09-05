@@ -29,14 +29,12 @@ frontend sample_httpd
 
 backend sample_httpd
    balance roundrobin
-   server 228010-web-01 100.25.223.62 check
-   server 228010-web-02 18.204.11.178 check
+   server 228010-web-01 100.25.223.62:80 check
+   server 228010-web-02 18.204.11.178:80 check
 
 EOF
 )
 
 echo "$haproxy_config_content" | sudo tee "$haproxy_config_path" > /dev/null
-
-sudo systemctl restart haproxy
 
 sudo systemctl restart haproxy
