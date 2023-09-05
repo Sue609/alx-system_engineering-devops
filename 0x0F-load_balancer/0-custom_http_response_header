@@ -2,17 +2,15 @@
 # Adding a custom Nginx response heade
 # to be able to track which web server is answering our HTTP requests
 
-import subprocess
 
-subprocess.call(["sudo", "apt-get", "-y", "update"])
+sudo apt-get -y update
+sudo apt-get -y install nginx
 
-subprocess.call(["sudo", "apt-get", "-y", "install", "nginx"])
+echo "Ceci n'est pas une page" |
+    sudo tee /usr/share/nginx/html/custom_404.html > /dev/null
 
-with open("/usr/share/nginx/html/custom_404.html", "w") as custom_404_file:
-    custom_404_file.write("Ceci n'est pas une page")
-
-nginx_config_path = "/etc/nginx/sites-available/default"
-nginx_config_content = """
+nginx_config_path="/etc/nginx/sites-available/default"
+nginx_config_content=$(cat <<EOF
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -23,13 +21,13 @@ server {
     server_name _;
 
     location / {
-        try_files $uri $uri/ =404;
-        add_header X-Served-By $hostname;
+        try_files \$uri \$uri/ =404;
+        add_header X-Served-By \$hostname;
     }
 }
-"""
+EOF
+)
 
-with open(nginx_config_path, "w") as nginx_config_file:
-    nginx_config_file.write(nginx_config_content)
+echo "$nginx_config_content" | sudo tee "$nginx_config_path" > /dev/null
 
-subprocess.call(["sudo", "systemctl", "restart", "nginx"])
+sudo systemctl restart nginx
