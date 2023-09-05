@@ -2,13 +2,34 @@
 # Adding a custom Nginx response heade
 # to be able to track which web server is answering our HTTP requests
 
-sudo apt-get -y update
-sudo apt-get -y install nginx
+import subprocess
 
-echo "Hello World!" > /var/www/html/index.nginx-debian.html
+subprocess.call(["sudo", "apt-get", "-y", "update"])
 
-echo "Ceci n'est pas une page" > /usr/share/nginx/html/custom_404.html
+subprocess.call(["sudo", "apt-get", "-y", "install", "nginx"])
 
-sudo vi /etc/nginx/sites-available/default
+with open("/usr/share/nginx/html/custom_404.html", "w") as custom_404_file:
+    custom_404_file.write("Ceci n'est pas une page")
 
-add_header X-Served-By "$hostname"
+nginx_config_path = "/etc/nginx/sites-available/default"
+nginx_config_content = """
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html;
+
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ =404;
+        add_header X-Served-By $hostname;
+    }
+}
+"""
+
+with open(nginx_config_path, "w") as nginx_config_file:
+    nginx_config_file.write(nginx_config_content)
+
+subprocess.call(["sudo", "systemctl", "restart", "nginx"])
