@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+# Adding a custom Nginx response heade
+# to be able to track which web server is answering our HTTP requests
+
+sudo apt-get -y update
+sudo apt-get -y install nginx
+
+echo "Hello World!" > /var/www/html/index.nginx-debian.html
+
+echo "Ceci n'est pas une page" > /usr/share/nginx/html/custom_404.html
+
+sudo vi /etc/nginx/sites-available/default
+
+add_header X-Served-By "$hostname"
