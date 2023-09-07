@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Bash script with the minimum number of commands to automate your fix.
+sed -i 's/listen [::]:80 default_server;/listen 0.0.0.0:80;/g' /etc/nginx/sites-available/default
+sudo service nginx restart
+echo "" | sudo dd status=none of=/run/nginx.pid
