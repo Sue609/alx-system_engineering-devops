@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#Script that runs the "whoamai" command under the user passes as ana arguement.
+
+#Check if an arguement is provided
+if [ $# -ne 1 ]; then
+	echo "$0 <username>"
+	exit 1
+fi
+
+#Run the 'whoami' command as the specified user
+sudo -u "$1" whoami
