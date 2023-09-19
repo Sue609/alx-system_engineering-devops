@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #Script that fixes the docker container so that Nginx is runnng as the nginx user.
-
 if ! id -u nginx &>/dev/null; then
   useradd -r nginx
 fi
