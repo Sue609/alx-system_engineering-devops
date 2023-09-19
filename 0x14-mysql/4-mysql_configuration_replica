@@ -37,5 +37,5 @@ bind-address   = 127.0.0.1
 symbolic-links=0
 server-id               = 2
 relay-log               = /var/log/mysql/mysql-relay-bin.log
+binlog_do_db    	= tyrell_corp
 log_bin                 = /var/log/mysql/mysql-bin.log
-replica_do_db         = tyrell_corp
