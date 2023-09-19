@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#Script that fixes the docker container so that Nginx is runnng as the nginx user.
+
+if ! id -u nginx &>/dev/null; then
+  useradd -r nginx
+fi
+
+# Edit the Nginx configuration to run as the 'nginx' user
+sed -i "s/#user www-data/user nginx/" /etc/nginx/nginx.conf
+
+# Edit the Nginx default site configuration to listen on port 8080
+sed -i "s/80/8080/g" /etc/nginx/sites-available/default
+
+chmod 644 /etc/nginx/nginx.conf
+pkill apache2
+
+service nginx start
+
+# Check if Nginx is running
+if pgrep -x "nginx" >/dev/null; then
+  echo "Nginx is running as the 'nginx' user and listening on port 8080."
+else
+  echo "Nginx failed to start."
+fi
