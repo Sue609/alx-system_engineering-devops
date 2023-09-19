@@ -36,7 +36,6 @@ bind-address   = 127.0.0.1
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
 server-id               = 2
-relay_log               = /var/log/mysql/mysql-relay-bin.log
+relay-log               = /var/log/mysql/mysql-relay-bin.log
 log_bin                 = /var/log/mysql/mysql-bin.log
-log_bin_index           = /var/log/mysql/mysql-bin.log.index
-replicate-do-db         = tyrell_corp
+replica_do_db         = tyrell_corp
