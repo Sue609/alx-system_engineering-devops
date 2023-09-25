@@ -1,42 +1,27 @@
 #!/usr/bin/python3
-"""
-This module introduces a function.
-"""
-
-
+"""Exports to-do list information of all employees to JSON format."""
 import json
 import requests
 
-def export_all_employees_to_json():
+
+def to_dict(url):
     """
-    Fetch the data from the API endpoint
+    Function that exports data in the JSON formart.
+    Transforms the dta to a dict.
     """
-    response = requests.get('https://jsonplaceholder.typicode.com/todos')
-    todos = response.json()
+    users = requests.get(url + "users").json()
 
-    # Create a dictionary to store tasks for each user
-    user_tasks = {}
-
-    # Iterate through the todos and organize them by user ID
-    for todo in todos:
-        user_id = todo['userId']
-        task = {
-            "username": "",  # You can fetch the username from another API or source
-            "task": todo['title'],
-            "completed": todo['completed']
-        }
-
-        # Add the task to the user's list of tasks
-        if user_id in user_tasks:
-            user_tasks[user_id].append(task)
-        else:
-            user_tasks[user_id] = [task]
-
-    # Write the data to a JSON file
-    with open('todo_all_employees.json', 'w') as json_file:
-        json.dump(user_tasks, json_file, indent=4)
+    with open("todo_all_employees.json", "w") as jsonfile:
+        json.dump({
+            u.get("id"): [{
+                "task": t.get("title"),
+                "completed": t.get("completed"),
+                "username": u.get("username")
+            } for t in requests.get(url + "todos",
+                                    params={"userId": u.get("id")}).json()]
+            for u in users}, jsonfile)
 
 
 if __name__ == "__main__":
-    export_all_employees_to_json()
-
+    url = "https://jsonplaceholder.typicode.com/"
+    to_dict(url)
