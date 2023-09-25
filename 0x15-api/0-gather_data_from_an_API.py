@@ -9,44 +9,38 @@ def get_todo_list(employee_id):
     """
     Python script that, using this REST API, for a given employee ID
     """
-    url = "https://jsonplaceholder.typicode.com/"
-    user_response = requests.get(url + "users/{}".format(employee_id))
+    base_url = 'https://jsonplaceholder.typicode.com'
+    user_url = f'{base_url}/users/{employee_id}'
+    todo_url = f'{base_url}/todos?userId={employee_id}'
 
-    if user_response.status_code != 200:
-        return None
+    try:
+        user_response = requests.get(user_url)
+        todo_response = requests.get(todo_url)
 
-    user = user_response.json()
-    todos_response = requests.get(url + "todos",
-                                  params={"userId": employee_id})
-    todos = todos_response.json()
+        user_data = user_response.json()
+        todo_data = todo_response.json()
 
-    completed = [t.get("title") for t in todos if t.get("completed") is True]
-    return user.get("name"), len(completed), len(todos), completed
+        if user_response.status_code == 200 and \
+                todo_response.status_code == 200:
+            employee_name = user_data['name']
+            total_tasks = len(todo_data)
+            completed_tasks = sum(1 for task in todo_data if task['completed'])
+
+            print(f'Employee {employee_name} is done with tasks'
+                  f'({completed_tasks}/{total_tasks}):')
+            for task in todo_data:
+                if task['completed']:
+                    print(f'\t{task["title"]}')
+        else:
+            print(f"Error: Unable to retrieve data for employee {employee_id}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
 
 
-def main():
-    """
-    Main function.
-    """
+if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("Usage: python3 script.py <employee_id>")
+        print("Usage: python3 gather_data_from_an_API.py <employee_id>")
         sys.exit(1)
 
-    employee_id = sys.argv[1]
-    result = get_todo_list(employee_id)
-
-    if result is None:
-        print("User not found")
-        sys.exit(1)
-
-    employee_name, completed_tasks, total_tasks, completed_list = result
-
-    print("Employee {} is done with tasks({}/{}):".format(
-        employee_name, completed_tasks, total_tasks))
-
-    for task in completed_list:
-        print("\t{}".format(task))
-
-
-if __name__ == "__main__":
-    main()
+    employee_id = int(sys.argv[1])
+    get_todo_list(employee_id)
