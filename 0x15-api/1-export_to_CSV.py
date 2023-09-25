@@ -1,60 +1,79 @@
 #!/usr/bin/python3
-"""Exports to-do list information for a given employee ID to a CSV file."""
-
+"""Exports to-do list information for a given employee ID to CSV format."""
+import csv
 import requests
 import sys
-import csv
 
-def get_todo_list(employee_id):
+
+def get_user_data(user_id):
     """
-     This function takes an employee_id as input and returns user data and their TODO list
-     """
+    functionality to retrieve user data and user's TODO list
+    """
     url = "https://jsonplaceholder.typicode.com/"
+    user_response = requests.get(url + "users/{}".format(user_id))
 
-    # Fetch user data
-    user_response = requests.get(url + "users/{}".format(employee_id))
     if user_response.status_code != 200:
-        return None, None
+        return None
 
     user = user_response.json()
-    
-    # Fetch user's TODO list
-    todos_response = requests.get(url + "todos", params={"userId": employee_id})
+    return user
+
+
+def get_user_todos(user_id):
+    """
+    functionality to retrieve user data and user's TODO list
+    """
+    url = "https://jsonplaceholder.typicode.com/"
+    todos_response = requests.get(url + "todos", params={"userId": user_id})
+
+    if todos_response.status_code != 200:
+        return None
+
     todos = todos_response.json()
+    return todos
 
-    return user, todos
 
-
-def export_to_csv(user, todos):
+def export_to_csv(user_id, username, todos):
     """
-    This function takes user data and the TODO list as input
-    and exports the data to a CSV file in the specified format
+    takes user ID, username, and TODO list as arguments.
     """
-    if user is None or todos is None:
+    if todos is None:
         return
 
-    filename = "{}.csv".format(user["id"])
-    with open(filename, mode="w", newline="") as file:
-        writer = csv.writer(file, quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+    with open("{}.csv".format(user_id), "w", newline="") as csvfile:
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+        writer.writerow(["USER_ID", "USERNAME",
+                         "TASK_COMPLETED_STATUS", "TASK_TITLE"])
 
         for todo in todos:
-            writer.writerow([user["id"], user["username"], str(todo["completed"]), todo["title"]])
+            writer.writerow([
+                user_id,
+                username,
+                str(todo.get("completed")),
+                todo.get("title")
+            ])
 
 
 def main():
     """
-     It handles command-line arguments, calls the get_todo_list
-     and export_to_csv functions, and orchestrates the script's execution.
+     function handles command-line arguments
+     calls the data retrieval functions,
+     and then exports the data to a CSV file.
      """
     if len(sys.argv) != 2:
         print("Usage: python3 script.py <employee_id>")
         sys.exit(1)
 
-    employee_id = sys.argv[1]
+    user_id = sys.argv[1]
 
-    user, todos = get_todo_list(employee_id)
-    export_to_csv(user, todos)
+    user = get_user_data(user_id)
+    if user is None:
+        print("User not found")
+        sys.exit(1)
+
+    username = user.get("username")
+    todos = get_user_todos(user_id)
+    export_to_csv(user_id, username, todos)
 
 
 if __name__ == "__main__":
