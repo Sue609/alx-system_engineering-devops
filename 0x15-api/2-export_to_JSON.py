@@ -1,47 +1,27 @@
 #!/usr/bin/python3
-"""
-This module introduces a function.
-"""
-
+"""Exports to-do list information for a given employee ID to JSON format."""
 import json
+import requests
 import sys
 
-# Load the data (assuming you have the data in a dictionary called "data")
-data = {
-    "1": [
-        {"task": "Task 1", "completed": False, "username": "User1"},
-        {"task": "Task 2", "completed": True, "username": "User1"},
-    ],
-    "2": [
-        {"task": "Task A", "completed": True, "username": "User2"},
-        {"task": "Task B", "completed": False, "username": "User2"},
-    ],
-    "3": [
-        {"task": "Task X", "completed": True, "username": "User3"},
-        {"task": "Task Y", "completed": False, "username": "User3"},
-    ],
-}
 
-
-def export_to_json(user_id, data):
+def export_to_json(user_id):
     """
-    Exporting the json file.
+    Python script that exports data in the json format.
     """
-    if user_id not in data:
-        print(f"No tasks found for user with ID {user_id}")
-        return
+    b_url = "https://jsonplaceholder.typicode.com/"
+    user = requests.get(b_url + "users/{}".format(user_id)).json()
+    username = user.get("username")
+    todos = requests.get(b_url + "todos", params={"userId": user_id}).json()
 
-    user_tasks = data[user_id]
-    output_file = f"{user_id}.json"
-
-    with open(output_file, "w") as file:
-        json.dump({user_id: user_tasks}, file)
+    with open("{}.json".format(user_id), "w") as jsonfile:
+        json.dump({user_id: [{
+                "task": t.get("title"),
+                "completed": t.get("completed"),
+                "username": username
+            } for t in todos]}, jsonfile)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python export_to_JSON.py USER_ID")
-        sys.exit(1)
-
     user_id = sys.argv[1]
-    export_to_json(user_id, data)
+    export_to_json(user_id)
