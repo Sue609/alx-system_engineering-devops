@@ -1,59 +1,51 @@
 #!/usr/bin/python3
-"""
-This module introduces a script using te REST API.
-"""
+"""Returns to-do list information for a given employee ID."""
 
 import requests
 import sys
 
 
-def get_employee_data(employee_id):
+def get_todo_list(employee_id):
     """
-    Script that returns information of a given employee ID about his/her
-    todo list progress.
+    Python script that, using this REST API, for a given employee ID
     """
-    base_url = 'https://jsonplaceholder.typicode.com'
+    url = "https://jsonplaceholder.typicode.com/"
+    user_response = requests.get(url + "users/{}".format(employee_id))
 
-    """ Fteching the users data."""
-    user_url = f'{base_url}/users/{employee_id}'
-    user_response = requests.get(user_url)
-    user_data = user_response.json()
-    employee_name = user_data.get('name')
+    if user_response.status_code != 200:
+        return None
 
-    """Fetching useres TODO list"""
-    todos_url = f'{base_url}/todos?userId={employee_id}'
-    todos_response = requests.get(todos_url)
+    user = user_response.json()
+    todos_response = requests.get(url + "todos",
+                                  params={"userId": employee_id})
     todos = todos_response.json()
 
-    """ Calculating completes and total tasks"""
-    total_tasks = len(todos)
-    completed_tasks = sum(1 for todo in todos if todo['completed'])
-
-    return employee_name, completed_tasks, total_tasks, todos
+    completed = [t.get("title") for t in todos if t.get("completed") is True]
+    return user.get("name"), len(completed), len(todos), completed
 
 
 def main():
     """
-    The main function.
+    Main function.
     """
     if len(sys.argv) != 2:
-        print("Usage: python3 gather_data_from_an_API.py <employee_id>")
+        print("Usage: python3 script.py <employee_id>")
         sys.exit(1)
-    employee_id = int(sys.argv[1])
 
-    try:
-        employee_name, completed_tasks, total_tasks, todos = get_employee_data(
-                employee_id)
-        print(f"Employee {employee_name} is done with tasks("
-              f"{completed_tasks}/{total_tasks}):")
+    employee_id = sys.argv[1]
+    result = get_todo_list(employee_id)
 
-        for todo in todos:
-            if todo['completed']:
-                print(f"\t{todo['title']}")
-
-    except requests.exceptions.RequestException as e:
-        print(f"Error: {e}")
+    if result is None:
+        print("User not found")
         sys.exit(1)
+
+    employee_name, completed_tasks, total_tasks, completed_list = result
+
+    print("Employee {} is done with tasks({}/{}):".format(
+        employee_name, completed_tasks, total_tasks))
+
+    for task in completed_list:
+        print("\t{}".format(task))
 
 
 if __name__ == "__main__":
