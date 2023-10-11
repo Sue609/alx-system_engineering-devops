@@ -12,12 +12,15 @@ def top_ten(subreddit):
     """
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
     headers = {'User-Agent': 'Custom User Agent'}
-
-    response = requests.get(url, headers=headers)
-
+    params = {'limit': 10}
+    
+    response = requests.get(url, headers=headers, params=params)
+    
     if response.status_code == 200:
-        result = response.json().get("data")
-        [print(c.get("data").get("title")) for c in results.get("children")]
+        data = response.json()
+        posts = data['data']['children']
+        for post in posts:
+            print(post['data']['title'])
     elif response.status_code == 404:
         print(None)
         return
