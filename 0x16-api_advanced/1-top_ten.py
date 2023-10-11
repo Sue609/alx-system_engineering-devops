@@ -14,7 +14,7 @@ def top_ten(subreddit):
     headers = {'User-Agent': 'Custom User Agent'}
     params = {'limit': 10}
 
-    response = requests.get(url, headers=headers, params=params
+    response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
         data = response.json()
         posts = data['data']['children']
@@ -22,4 +22,5 @@ def top_ten(subreddit):
             print(post['data']['title'])
     elif response.status_code == 404:
         print(None)
-        return
+    else:
+        print(None)
