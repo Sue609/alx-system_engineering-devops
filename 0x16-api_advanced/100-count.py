@@ -5,6 +5,7 @@ This module introduces a function.
 
 import requests
 
+
 def count_words(subreddit, word_list, after=None, counts=None):
     """
     Recursive function that queries and counts occurrences of
@@ -30,7 +31,8 @@ def count_words(subreddit, word_list, after=None, counts=None):
             title = post['data']['title'].lower()
             for keyword in word_list:
                 if keyword.lower() in title:
-                    counts[keyword.lower()] = counts.get(keyword.lower(), 0) + 1
+                    keyword_lower = keyword.lower()
+                    counts[keyword_lower] = counts.get(keyword_lower, 0) + 1
         if after:
             count_words(subreddit, word_list, after, counts)
         else:
