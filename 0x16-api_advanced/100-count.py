@@ -6,35 +6,50 @@ This module introduces a function.
 import requests
 
 
-def count_words(subreddit, word_list, after=None, counts=None):
+def count_words(subreddit, word_list, instances={}, after="", count=0):
     """
     Recursive function that queries and counts occurences of
     keywords in the reddit hot article titles.
     """
-    if counts is None:
-        counts = {}
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-    headers = {'User-Agent': 'Custom User Agent'}
-    params = {'limit': 100}
+    url = "https://www.reddit.com/r/{}/hot/.json".format(subreddit)
+    headers = {
+        "User-Agent": "linux:0x16.api.advanced:v1.0.0 (by /u/bdov_)"
+    }
+    params = {
+        "after": after,
+        "count": count,
+        "limit": 100
+    }
+    response = requests.get(url, headers=headers, params=params,
+                            allow_redirects=False)
+    try:
+        results = response.json()
+        if response.status_code == 404:
+            raise Exception
+        data = results.get("data")
+        if data is None:
+            raise Exception
+    except Exception:
+        print("")
+        return
 
-    if after:
-        params['after'] = after
+    after = data.get("after")
+    count += data.get("dist")
+    for c in data.get("children"):
+        title = c.get("data").get("title").lower().split()
+        for word in word_list:
+            if word.lower() in title:
+                times = len([t for t in title if t == word.lower()])
+                if instances.get(word) is None:
+                    instances[word] = times
+                else:
+                    instances[word] += times
 
-    response = requests.get(url, headers=headers, params=params)
-
-    if response.status_code == 200:
-        data = response.json()
-        posts = data['data']['children']
-        after = data['data']['after']
-
-        for post in posts:
-            title = post['data']['title'].lower()
-            for keyword in word_list:
-                if keyword.lower() in title:
-                    counts[keyword.lower()] = counts.get(keyword, 0) + 1
-        if after:
-            count_words(subreddit, word_list, after, counts)
-        else:
-            sorted_counts = sorted(counts.items(), key=lambda x: (-x[1], x[0]))
-            for keyword, count in sorted_counts:
-                print(f"{keyword.lower()}: {count}")
+    if after is None:
+        if len(instances) == 0:
+            print("")
+            return
+        instances = sorted(instances.items(), key=lambda kv: (-kv[1], kv[0]))
+        [print("{}: {}".format(k, v)) for k, v in instances]
+    else:
+        count_words(subreddit, word_list, instances, after, count)

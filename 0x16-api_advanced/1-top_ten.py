@@ -23,5 +23,4 @@ def top_ten(subreddit):
             print(title)
     elif response.status_code == 404:
         print(None)
-    else:
-        print(None)
+        return
