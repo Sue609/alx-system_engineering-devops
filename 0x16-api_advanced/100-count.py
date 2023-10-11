@@ -26,16 +26,14 @@ def count_words(subreddit, word_list, instances={}, after="", count=0):
         results = response.json()
         if response.status_code == 404:
             raise Exception
-        data = results.get("data")
-        if data is None:
-            raise Exception
     except Exception:
         print("")
         return
 
-    after = data.get("after")
-    count += data.get("dist")
-    for c in data.get("children"):
+    results = results.get("data")
+    after = results.get("after")
+    count += results.get("dist")
+    for c in results.get("children"):
         title = c.get("data").get("title").lower().split()
         for word in word_list:
             if word.lower() in title:
