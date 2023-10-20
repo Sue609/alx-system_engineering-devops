@@ -13,7 +13,7 @@ service { 'apache2':
 }
 
 # Run ApacheBench to test the server
-exec { 'run_apache_bench':
+exec { 'fix--for-nginx':
    command => '/usr/bin/ab -c 100 -n 1000 http://localhost/',
    require => Service['apache2'],
 }
