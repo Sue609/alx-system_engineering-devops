@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Get the process IDs of Gunicorn workers
+worker_pids=$(pgrep -f "gunicorn.*web_flask.0-hello_route:app")
+
+# Gracefully reload Gunicorn workers
+for pid in $worker_pids; do
+    echo "Gracefully reloading Gunicorn worker with PID $pid"
+    kill -s TERM $pid
+    while [ -e /proc/$pid ]; do
+        sleep 0.1
+    done
+done
+
+# Start new Gunicorn workers with the updated code/configuration
+echo "Starting new Gunicorn workers"
+gunicorn -w 4 -b 0.0.0.0:8001 web_flask.0-hello_route:app
