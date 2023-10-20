@@ -1,19 +1,6 @@
 # install_apache.pp
 
-# Ensure Apache2 package is installed
-package { 'apache2':
-  ensure => installed,
-}
-
-# Ensure Apache2 service is running and enabled
-service { 'apache2':
-  ensure  => running,
-  enable  => true,
-  require => Package['apache2'],
-}
-
-# Run ApacheBench to test the server
-exec { 'fix--for-nginx':
-  command => '/usr/bin/ab -c 100 -n 1000 http://localhost/',
-  require => Service['apache2'],
+exec { 'change nginx limit':
+    command  => 'sudo sed -i "s/15/4096/g" /etc/default/nginx; sudo service nginx restart',
+    provider => shell,
 }
