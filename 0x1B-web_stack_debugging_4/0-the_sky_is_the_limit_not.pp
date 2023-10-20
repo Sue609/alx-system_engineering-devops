@@ -14,6 +14,6 @@ service { 'apache2':
 
 # Run ApacheBench to test the server
 exec { 'fix--for-nginx':
-   command => '/usr/bin/ab -c 100 -n 1000 http://localhost/',
-   require => Service['apache2'],
+  command => '/usr/bin/ab -c 100 -n 1000 http://localhost/',
+  require => Service['apache2'],
 }
